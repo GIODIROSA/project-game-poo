@@ -1,0 +1,57 @@
+tabla Usuario:
+CREATE TABLE `dungeon_and_dragons`.`usuarios` (`USU_id` INT NOT NULL AUTO_INCREMENT , `USU_nombre` VARCHAR(45) NOT NULL , `USU_pass` VARCHAR(45) NOT NULL , `USU_correo` VARCHAR(45) NOT NULL , `USU_JUG_id` INT NOT NULL , PRIMARY KEY (`USU_id`)) ENGINE = InnoDB;
+
+Tabla Jugadores:
+CREATE TABLE `dungeon_and_dragons`.`jugadores` (`JUG_id` INT NOT NULL AUTO_INCREMENT , `JUG_nombre` VARCHAR(45) NOT NULL , `JUG_nivel` INT NOT NULL , `JUG_salud` INT NOT NULL , `JUG_raza` VARCHAR(45) NOT NULL , `JUG_experiencia` INT NOT NULL , `JUG_puntaje` INT NOT NULL , `JUG_INV_id` INT NOT NULL , PRIMARY KEY (`JUG_id`)) ENGINE = InnoDB;
+
+Tabla Inventarios:
+CREATE TABLE `dungeon_and_dragons`.`inventarios` (`INV_id` INT NOT NULL AUTO_INCREMENT , `INV_ARM_id` INT NOT NULL , `INV_ESC_id` INT NOT NULL , `INV_POC_id` INT NOT NULL , `INV_capacidad` INT NOT NULL , PRIMARY KEY (`INV_id`)) ENGINE = InnoDB;
+
+Tabla Armas:
+CREATE TABLE `dungeon_and_dragons`.`armas` (`ARM_id` INT NOT NULL AUTO_INCREMENT , `ARM_nombre` VARCHAR(45) NOT NULL , `ARM_danho` INT NOT NULL , `ARM_nivel` INT NOT NULL , PRIMARY KEY (`ARM_id`)) ENGINE = InnoDB;
+
+Tabla Escudos:
+CREATE TABLE `dungeon_and_dragons`.`escudos` (`ESC_id` INT NOT NULL AUTO_INCREMENT , `ESC_nombre` VARCHAR(45) NOT NULL , `ESC_defensa` INT NOT NULL , PRIMARY KEY (`ESC_id`)) ENGINE = InnoDB;
+
+Tabla Pociones:
+CREATE TABLE `dungeon_and_dragons`.`pociones` (`POC_id` INT NOT NULL AUTO_INCREMENT , `POC_nombre` VARCHAR(45) NOT NULL , `POC_cura` INT NOT NULL , PRIMARY KEY (`POC_id`)) ENGINE = InnoDB;
+
+Tabla Equipos:
+CREATE TABLE `dungeon_and_dragons`.`equipos` (`EQU_id` INT NOT NULL AUTO_INCREMENT , `EQU_nombre` VARCHAR(45) NOT NULL , `EQU_JUG_id` INT NOT NULL , PRIMARY KEY (`EQU_id`)) ENGINE = InnoDB;
+
+Tabla Ranking:
+CREATE TABLE `dungeon_and_dragons`.`ranking` (`RG_id` INT NOT NULL AUTO_INCREMENT , `RG_JUG_id` INT NOT NULL , PRIMARY KEY (`RG_id`)) ENGINE = InnoDB;
+
+
+----------------------------------------
+Usuario: dragons
+Host: localhost
+Clave: okidoki
+
+SQL:
+CREATE USER 'dragons'@'localhost' IDENTIFIED VIA mysql_native_password USING '***';GRANT ALL PRIVILEGES ON *.* TO 'dragons'@'localhost' REQUIRE NONE WITH GRANT OPTION MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;GRANT ALL PRIVILEGES ON `dungeon\_and\_dragons`.* TO 'dragons'@'localhost';
+REVOKE ALL PRIVILEGES ON `dungeon\_and\_dragons`.* FROM 'dragons'@'localhost'; GRANT ALL PRIVILEGES ON `dungeon\_and\_dragons`.* TO 'dragons'@'localhost' WITH GRANT OPTION;
+----------------------------------------
+
+Relaciones:
+
+Usuario - Jugadores:
+ALTER TABLE `usuarios` ADD CONSTRAINT `fk_USU_JUG` FOREIGN KEY (`USU_JUG_id`) REFERENCES `jugadores`(`JUG_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+Jugadores - Inventarios:
+ALTER TABLE `jugadores` ADD CONSTRAINT `fk_JUG_INV` FOREIGN KEY (`JUG_INV_id`) REFERENCES `inventarios`(`INV_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+Inventario - Armas
+ALTER TABLE `inventarios` ADD CONSTRAINT `fk_INV_ARM` FOREIGN KEY (`INV_ARM_id`) REFERENCES `armas`(`ARM_id`) ON DELETE RESTRICT ON UPDATE RESTRICT; 
+
+Inventario - Escudos
+ALTER TABLE `inventarios` ADD CONSTRAINT `fk_INV_ESC` FOREIGN KEY (`INV_ESC_id`) REFERENCES `escudos`(`ESC_id`) ON DELETE RESTRICT ON UPDATE RESTRICT; 
+
+Inventario - Pociones
+ALTER TABLE `inventarios` ADD CONSTRAINT `fk_INV_POC` FOREIGN KEY (`INV_POC_id`) REFERENCES `pociones`(`POC_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+Equipos - Jugadores:
+ALTER TABLE `equipos` ADD CONSTRAINT `fk_EQU_JUG` FOREIGN KEY (`EQU_JUG_id`) REFERENCES `jugadores`(`JUG_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+Ranking - Jugadores:
+ALTER TABLE `ranking` ADD CONSTRAINT `fk_RG_JUG` FOREIGN KEY (`RG_JUG_id`) REFERENCES `jugadores`(`JUG_id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
