@@ -1,4 +1,3 @@
-
 from termshape import get_numbers, get_rectangle 
 
 
