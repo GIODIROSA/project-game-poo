@@ -10,7 +10,6 @@ password = "okidoki"
 database = "dungeon_and_dragons" 
 
 try:
-    # Estableciendo conexión
     conexion = pymysql.connect(
         host=host,
         user=user,
