@@ -1,12 +1,12 @@
 import pymysql
-import constantes
+import env
+
 
 # Configuración de conexión
-host = "localhost"     
-user = "dragons"       
-password = "okidoki"
-database = "dungeon_and_dragons" 
-
+host = env.HOST            
+user = env.USER      
+password = env.PASSWORD
+database = env.DATABASE
 
 try:
     conexion = pymysql.connect(
