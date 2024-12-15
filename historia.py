@@ -4,10 +4,6 @@ sys.stdout.reconfigure(encoding='utf-8')
 
 
 
-print(get_numbers(1387,3))
-print(get_rectangle(10, 5))
-
-
 
 def imprimir_historia():
     print("\033[1;34m" + "=" * 80 + "\033[0m")  

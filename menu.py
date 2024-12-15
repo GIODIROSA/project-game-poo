@@ -1,4 +1,11 @@
 
+import pymysql
+#import bcrypt
+from argon2 import PasswordHasher
+from DAO.conexion import conexion
+
+ph = PasswordHasher()
+
 usuario_registrado = {}
 sesion_iniciada = False
 jugador = None
@@ -7,30 +14,78 @@ armas = ["Espada", "Arco", "Hacha"]
 escudos = ["Ligero", "Pesado"]
 razas = ["Humano", "Orco", "Elfo", "Enano"]
 
-def intro():
-    print("""
-    *** Bienvenido a la Era Medieval ***
-    En un mundo donde humanos, orcos, elfos y enanos luchan por el control del reino,
-    tú serás el héroe que escriba su propia historia.
-    """)
+
 
 def registro():
     print("=== Registro ===")
-    usuario = input("Ingresa tu usuario: ")
+    nombre_usuario = input("Ingresa tu nombre de usuario: ").lower()
+    correo = input("Ingresa tu correo: ")
     password = input("Ingresa tu contraseña: ")
-    usuario_registrado[usuario] = password
-    print("Registro exitoso. Por favor, inicia sesión.")
+
+ 
+    hashed_password = ph.hash(password)
+
+    if not conexion or not conexion.open:
+        print("La conexión no está activa. Revisa la configuración.")
+        return
+
+    try:
+        with conexion.cursor() as cursor:
+
+            check_query = """
+            SELECT COUNT(*) FROM usuarios WHERE USU_nombre = %s
+            """
+            cursor.execute(check_query, (nombre_usuario,))
+            result = cursor.fetchone()
+            
+            if result[0] > 0:
+                print(f"El nombre de usuario '{nombre_usuario}' ya está registrado. Intenta con otro.")
+                return
+  
+            insert_query = """
+            INSERT INTO usuarios (USU_nombre, USU_pass, USU_correo) 
+            VALUES (%s, %s, %s)
+            """
+            cursor.execute(insert_query, (nombre_usuario, hashed_password, correo))
+            conexion.commit()
+            print("Registro exitoso. Por favor, inicia sesión.")
+    except pymysql.MySQLError as e:
+        print(f"Ocurrió un error al registrar el usuario: {e.args}")
+
+
 
 def login():
     print("=== Inicio de Sesión ===")
     global sesion_iniciada
-    usuario = input("Usuario: ")
-    password = input("Contraseña: ")
-    if usuario in usuario_registrado and usuario_registrado[usuario] == password:
-        print("Inicio de sesión exitoso. ¡Bienvenido!")
-        sesion_iniciada = True
-    else:
-        print("Usuario o contraseña incorrectos.")
+    usuario = input("Ingresa tu usuario: ").lower() 
+   
+    password = input("Ingresa tu contraseña: ")
+ 
+ 
+    try:
+        with conexion.cursor() as cursor:
+            query = """
+            SELECT USU_pass FROM usuarios WHERE USU_nombre = %s
+            """
+            cursor.execute(query, (usuario,))
+            result = cursor.fetchone()
+
+            if result:
+                stored_hash = result[0].strip()  
+                
+                try:
+                    ph.verify(stored_hash, password)
+                    print("Inicio de sesión exitoso. ¡Bienvenido!")
+                    sesion_iniciada = True
+                except:
+                    print("Usuario o contraseña incorrectos.")
+            else:
+                print("Usuario no encontrado.")
+    except pymysql.MySQLError as e:
+        print("Ocurrió un error durante el inicio de sesión:", e)
+
+
+
 
 def seleccionar_raza():
     global jugador
@@ -89,7 +144,7 @@ def menu_principal():
             elif opcion == "3":
                 salir_juego = True
         else:
-            print("""
+            print(""" 
             === Menú Principal ===
             1. Seleccionar raza
             2. Equipar arma y escudo
@@ -111,3 +166,7 @@ def menu_principal():
                 mostrar_estadisticas()
             elif opcion == "6":
                 salir_juego = salir()
+
+    if conexion and conexion.open:
+        conexion.close()
+        print("Conexión a la base de datos cerrada.")
