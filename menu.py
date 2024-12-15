@@ -21,25 +21,37 @@ def registro():
     nombre_usuario = input("Ingresa tu nombre de usuario: ").lower()
     correo = input("Ingresa tu correo: ")
     password = input("Ingresa tu contraseña: ")
-    
-    # Hash de la contraseña con Argon2
+
+ 
     hashed_password = ph.hash(password)
-  
+
     if not conexion or not conexion.open:
         print("La conexión no está activa. Revisa la configuración.")
         return
 
     try:
         with conexion.cursor() as cursor:
-            query = """
+
+            check_query = """
+            SELECT COUNT(*) FROM usuarios WHERE USU_nombre = %s
+            """
+            cursor.execute(check_query, (nombre_usuario,))
+            result = cursor.fetchone()
+            
+            if result[0] > 0:
+                print(f"El nombre de usuario '{nombre_usuario}' ya está registrado. Intenta con otro.")
+                return
+  
+            insert_query = """
             INSERT INTO usuarios (USU_nombre, USU_pass, USU_correo) 
             VALUES (%s, %s, %s)
             """
-            cursor.execute(query, (nombre_usuario, hashed_password, correo))
+            cursor.execute(insert_query, (nombre_usuario, hashed_password, correo))
             conexion.commit()
             print("Registro exitoso. Por favor, inicia sesión.")
     except pymysql.MySQLError as e:
         print(f"Ocurrió un error al registrar el usuario: {e.args}")
+
 
 
 def login():
