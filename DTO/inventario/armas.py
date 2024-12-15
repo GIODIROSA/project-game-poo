@@ -4,21 +4,17 @@ class Arma:
     __tipo = ""
     __nivel = ""
     __danho = 0
-    __municion = 1
+    __n_golpes = 1
 
-    def __init__(self, nombre, tipo, nivel, danho, municion):
+    def __init__(self, nombre, tipo, nivel, danho, n_golpes):
         self.__nombre = nombre
         self.__tipo = tipo
         self.__nivel = nivel
         self.__danho = danho
-        self.__municion = municion
+        self.__n_golpes = n_golpes
     
     def __str__(self):
-        return (f"Nombre del arma: {self.__nombre} \n"
-                f"Tipo: {self.__tipo} \n"
-                f"Nivel: {self.__nivel} \n"
-                f"Daño: {self.__danho} \n"
-                f"Numero de golpes: {self.__municion}")
+        return (f"Nombre del arma: {self.__nombre}, Tipo: {self.__tipo}, Nivel: {self.__nivel}, Daño: {self.__danho}, Numero de golpes: {self.__n_golpes}")
     
     def get_nombre(self):
         return self.__nombre
@@ -32,8 +28,8 @@ class Arma:
     def get_danho(self):
         return self.__danho
 
-    def get_municion(self):
-        return self.__municion
+    def get_n_golpes(self):
+        return self.__n_golpes
 
 espada = Arma("Escalibur", "Espada", 1, 40, 1)
 hacha = Arma("Molag'Mal", "Hacha", 1, 40, 1)

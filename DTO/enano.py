@@ -2,15 +2,18 @@ from raza import Raza
 
 class Enano(Raza):
     def __init__(self, nombre):
-        super().__init__(nombre, vida_base=330, vida=330, esquive=0, raza="Orco")
+        super().__init__(nombre, vida_base=330, vida=330, esquive=20, raza="Orco")
 
     def set_nivel(self, nivel):
         if 1 <= nivel <= 3:
             super().set_nivel(nivel)
             if nivel == 2:
                 self.actualizar_vida_base(490)
+                self.__inventario.inv_restaurar_pocion()
             elif nivel == 3:
                 self.actualizar_vida_base(600)
+                self.__inventario.inv_restaurar_pocion()
+
     
     def usar_pocion(self):
         # Bonificación según nivel
@@ -25,3 +28,13 @@ class Enano(Raza):
         else:
             self.set_vida(vida_actual + curacion)
             print(f"{self.get_nombre()}, usaste una poción y recuperaste {curacion} puntos de vida. Te quedan {self.get_vida()} puntos de vida.")  
+
+    def atacar(self):
+        arma = self.get_arma_equipada()
+        #Habilidad del "Enano", si tiene una hacha equipado, hace 10% mas de daño
+        if arma.get_tipo() == "Hacha":
+            danho_ataque = (arma.get_danho() + (arma.get_danho() * 0.10))
+            return danho_ataque
+        else:
+            danho_ataque = self.__arma_equipada.get_danho()
+            return danho_ataque

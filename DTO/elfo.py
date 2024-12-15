@@ -1,4 +1,5 @@
 from raza import Raza
+import random
 
 class Elfo(Raza):
     def __init__(self, nombre):
@@ -9,19 +10,34 @@ class Elfo(Raza):
             super().set_nivel(nivel)
             if nivel == 2:
                 self.actualizar_vida_base(400)
+                self.actualizar_esquive(45)
+                self.__inventario.inv_restaurar_pocion()
             elif nivel == 3:
                 self.actualizar_vida_base(550)
+                self.actualizar_esquive(50)
+                self.__inventario.inv_restaurar_pocion()
+
     
-    def usar_pocion(self):
-        # Bonificación según nivel
-        porcentaje = {1: 0.20, 2: 0.30, 3: 0.40}[self.get_nivel()]
-        vida_actual = self.get_vida()
-        vida_base = self.get_vida_base()
-        curacion = vida_base * porcentaje
-        #En el caso de que la pocion exeda el maximo de la vida, solo se recupera la vida maxima
-        if vida_actual + curacion > vida_base:
-            self.set_vida(vida_base)
-            print(f"{self.get_nombre()}, usaste una poción y recuperaste toda tu vida.")
+    def actualizar_esquive(self, nuevo_esquive):
+        self.__esquive = nuevo_esquive
+    
+
+    def atacar(self):
+        arma = self.get_arma_equipada()
+        #Habilidad del "Elfo", si tiene un arco equipado, hace 20% mas de daño / los arcos pegan 2 veces
+        if arma.get_tipo() == "Arco":
+            danho_ataque = (arma.get_danho() + (arma.get_danho() * 0.20)) * 2
+            return danho_ataque
         else:
-            self.set_vida(vida_actual + curacion)
-            print(f"{self.get_nombre()}, usaste una poción y recuperaste {curacion} puntos de vida. Te quedan {self.get_vida()} puntos de vida.")  
+            danho_ataque = self.__arma_equipada.get_danho()
+            return danho_ataque
+        
+    def esquivar(self):
+        probabilidad_esquive = self.__esquive
+        numero_aleatorio = random.uniform(0, 100)# Genera un número entre 0 y 100
+        if numero_aleatorio <= probabilidad_esquive:
+            print(f"{self.__nombre} esquivó el ataque.")
+            return True  # Esquiva el ataque
+        else:
+            print(f"{self.__nombre} no pudo esquivar el ataque.")
+            return False  # No esquiva el ataque
