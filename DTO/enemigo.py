@@ -1,8 +1,8 @@
-from humano import Humano
-from orco import Orco
-from elfo import Elfo
-from enano import Enano
-import random
+from .humano import Humano
+from .orco import Orco
+from .elfo import Elfo
+from .enano import Enano
+
 
 enem_humano_lvl_1 = Humano("Aldric Valheir")
 enem_humano_lvl_1.arma_aleatoria()
@@ -48,10 +48,6 @@ lista_enemigos_lvl_1 = [enem_humano_lvl_1, enem_orco_lvl_1, enem_elfo_lvl_1, ene
 lista_enemigos_lvl_2 = [enem_humano_lvl_2, enem_orco_lvl_2, enem_elfo_lvl_2, enem_enano_lvl_2]
 lista_enemigos_lvl_3 = [enem_humano_lvl_3, enem_orco_lvl_3, enem_elfo_lvl_3, enem_enano_lvl_3]
 
-
-enemigo_actual_lvl_1 = random.choice(lista_enemigos_lvl_1)
-enemigo_actual_lvl_2 = random.choice(lista_enemigos_lvl_2)
-enemigo_actual_lvl_3 = random.choice(lista_enemigos_lvl_3)
 
 # print(f"Tu enemigo actual es: {enemigo_actual_lvl_1}")
 # print(f"Tu enemigo actual es: {enemigo_actual_lvl_2}")

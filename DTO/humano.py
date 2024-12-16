@@ -1,5 +1,5 @@
-from raza import Raza
-from inventario.pociones import pociones
+from .raza import Raza
+from .inventario.pociones import pociones
 
 class Humano(Raza):
     def __init__(self, nombre):
@@ -10,32 +10,27 @@ class Humano(Raza):
             super().set_nivel(nivel)
             if nivel == 2:
                 self.actualizar_vida_base(450)
-                self.__inventario.inv_restaurar_pocion()
             elif nivel == 3:
                 self.actualizar_vida_base(580)
-                self.__inventario.inv_restaurar_pocion()
 
-    
-
+  
     def usar_pocion(self):
+        vida_actual = self.get_vida()
+        vida_base = self.get_vida_base()
         # Bonificación según nivel
-        if self.__vida < self.__vida_base:
-            # porcentaje = pociones.get_nivel()
-            if self.__pociones == 1 or self.__pociones == 2:
-                porcentaje = porcentaje[self.get_nivel()]
-                curacion = (self.__vida_base * porcentaje)
-                #En el caso de que la pocion exeda el maximo de la vida, solo se recupera la vida maxima
-                if curacion > self.__vida_base - self.__vida:
-                    self.__vida = self.__vida_base
-                    print(f"{self.get_nombre()}, usaste una poción y recuperaste toda tu vida")
-                    print(f"Te queda {self.__pociones} pocion")
-
-                else:
-                    self.__vida += curacion
-                    print(f"{self.get_nombre()}, usaste una poción y recuperaste {curacion} puntos de vida. Te quedan {self.__vida} puntos de vida")
-                    print(f"Te queda {self.__pociones} pocion")
+        if vida_actual < vida_base:
+            porcentaje = pociones.get_nivel()
+            porcentaje = porcentaje[self.get_nivel()]
+            #Habilidad del humano, las pociones curan un 7% por nivel
+            porcentaje = porcentaje + (0.7 * self.get_nivel())
+            curacion = (vida_base * porcentaje)
+            #En el caso de que la pocion exeda el maximo de la vida, solo se recupera la vida maxima
+            if curacion > vida_base - vida_actual:
+                self.set_vida = vida_base
+                print(f"{self.get_nombre()}, usaste una poción y recuperaste toda tu vida")
             else:
-                print(f"No te quedan pociones")
+                self.set_vida += curacion
+                print(f"{self.get_nombre()}, usaste una poción y recuperaste {curacion} puntos de vida. Te quedan {self.__vida} puntos de vida")
         else:
             print(f"Tienes tu vida completa, no puedes usar pociones")
             
@@ -48,17 +43,17 @@ class Humano(Raza):
 
 
 
-######PRUEBA DE FUNCIONAMIENTO#####
-# # Crear personaje
-humano = Humano("Aragorn")
-print(f"{humano.get_nombre()} (Nivel {humano.get_nivel()}): Vida Base {humano.get_vida_base()}, Vida Actual {humano.get_vida()}")
-humano.elegir_arma()
-# # # Modificar vida
-humano.modificar_vida(100)
-humano.usar_pocion()
-# # # Cambiar nivel
-humano.set_nivel(2)
-print(f"{humano.get_nombre()} (Nivel {humano.get_nivel()}): Vida Base {humano.get_vida_base()}, Vida Actual {humano.get_vida()}")
-humano.usar_pocion()
-humano.modificar_vida(200)
-# # Usar poción (Opcional si tienes lógica de curación)
+# # ######PRUEBA DE FUNCIONAMIENTO#####
+# # # # Crear personaje
+# humano = Humano("Aragorn")
+# print(f"{humano.get_nombre()} (Nivel {humano.get_nivel()}): Vida Base {humano.get_vida_base()}, Vida Actual {humano.get_vida()}")
+# humano.elegir_arma()
+# # # # # # Modificar vida
+# humano.modificar_vida(100)
+# humano.usar_pocion()
+# # # # # # Cambiar nivel
+# humano.set_nivel(2)
+# # # print(f"{humano.get_nombre()} (Nivel {humano.get_nivel()}): Vida Base {humano.get_vida_base()}, Vida Actual {humano.get_vida()}")
+# # # humano.usar_pocion()
+# # # humano.modificar_vida(200)
+# # # # # Usar poción (Opcional si tienes lógica de curación)

@@ -1,4 +1,17 @@
-from enemigo import *
+from .enemigo import *
+from .humano import Humano
+from .orco import Orco
+from .elfo import Elfo
+from .enano import Enano
+import random
+
+
+
+
+
+##################################################           CONTADOR DE VICTORIAS= self.__victorias        ############################################################################
+
+
 
 class Jugador:
     __victorias = 0
@@ -8,11 +21,58 @@ class Jugador:
     
     def contador_victorias(self):
         self.__victorias += 1
+        print(f"Ganaste el combate.\nVictorias: {self.__victorias}")
+        self.personaje.get_inventario().inv_restaurar_pocion()
+        if self.__victorias == 2:
+            self.personaje.set_nivel(2)
+            print(f"""
+                Haz subido al nivel 2.
+                Tu vida maxima ahora es {self.personaje.get_vida_base()}.
+                Se a restaurado tu vida.
+                Se han restaurado tus pociones.
+                """)
+        elif self.__victorias == 4:
+            self.personaje.set_nivel(3)
+            print(f"""
+                    Haz subido al nivel 3.
+                    Tu vida maxima ahora es {self.personaje.get_vida_base()}.
+                    Se a restaurado tu vida.
+                    Se han restaurado tus pociones.
+                    """)
         pass
+
+    def get_victorias(self):
+        return self.__victorias
 
     #En esta funcion se determina el nombre del personaje y se llama a la funcion elegir raza, la cual retorna el personaje(con su raza correspondiente) creada
     def crear_personaje(self):
         print("¡Bienvenido a la creación de tu personaje!")
+        print(f"El Umbral de las Sombras")
+        print(f"""Al cruzar el oscuro umbral de la mazmorra, el aire se vuelve pesado, cargado de un aroma metálico y húmedo. 
+        Una tenue luz titilante proviene de antorchas desgastadas, apenas iluminando los antiguos grabados en las paredes 
+        que narran historias de conquistas olvidadas y sacrificios sombríos.
+        Un eco lejano de pasos resonantes advierte que no están solos. 
+        En esta oscura profundidad, los ojos de criaturas desconocidas brillan en la penumbra, observando, esperando. 
+        Serán nueve los enemigos que enfrentarán, cada uno más letal y astuto que el anterior, surgidos al azar de los misterios que yacen ocultos.
+        El destino es incierto, pero una cosa es segura: solo quienes enfrenten el desafío con valentía y estrategia saldrán con vida de esta prisión olvidada.
+        ¿Listos para desenvainar sus armas y probar su temple? La mazmorra no tiene piedad, y sus secretos no se entregan sin lucha
+            """)
+
+        print(f"""Antes de elegir personajes tienes q saber lo siguiente:
+        Tendras 6 enfrentamientos, cada uno mas dificil que el anterior. Cada 2 victorias subiras de nivel (nivel max: 3)
+        Las pociones te curan un 30%/40%/50% de vida segun el nivel del jugador. Podras acceder a ellas desde el inventario.
+        Las pociones se restauran cada vez q subas de nivel (Ocupalas son sabiduria).
+        Los escudos te cubren un 50% del daño total. Usalo, te puede salvar la vida.
+        Cada personaje tiene una probabilidad de esquivar del 20% cada vez q lo ataquen.
+        Cada turno puedes realizar solo 1 accion(Atacar, defenderte o usar una de tus 2 pociones).
+        Siempre partiras primero.
+        Al subir de nivel, tu vida base incrementa.
+        Existen 4 razas principales, cada uno con habilidades unicas:
+        Humanos: tienen 10% mas de daño con cualquier arma y se curan un 7%/14%/21% mas de vida usando pociones(segun nivel).
+        Elfos: 20% mas de daño con los arcos y 40%/45%/50% de probabilidad de esquivar golpes (segun nivel).
+        Orcos: 40% mas de daño con hachas y no pueden esquivar golpes.
+        Enanos: 100% de reduccion de daño al ocupar el escudo y realizan un 15% mas de daño con hachas.
+            """)
         
         # Seleccionar nombre
         nombre = input("Ingrese el nombre de su personaje: ").strip()
@@ -30,15 +90,6 @@ class Jugador:
         #Selecciona el arma del personaje llamando al metodo "elegir_arma()" de la clase "Raza"
         self.personaje.elegir_arma()
         print(f"\nTu personaje está listo: {self.personaje}")
-        print(f"""
-              Consejos: 
-              Cada turno puedes realizar solo 1 accion(Atacar, defenderte o usar pocion(maximo 2)).
-              Las pociones se restauran cada vez q ganas una batalla.
-              Al subir de nivel, tu vida base incrementa al igual que el daño de tus armas,
-              y ademas, dependiendo de tu raza, tus habilidades especiales se ven mejoradas.
-              Si tienes suerte puedes esquivar el golpe.
-              Siempre partiras primero.
-              """)
         return self.personaje
 
     #Entra como parametro el "nombre" del personaje a crear y se le asigna al personaje creado eligiendo una opcion de raza
@@ -57,14 +108,112 @@ class Jugador:
             self.personaje = Enano(nombre)
             print(f"Has seleccionado: Enano. Bienvenido {nombre}, el resistente.")
        
-    # def combate(self):
-    #     print(f"Tu primer enemigo a enfrentar es: {enemigo_actual_lvl_1}")
-    #     while True:
-    #         self.menu_jugador()
+    def combate(self):
+        niveles_combate = [
+            (lista_enemigos_lvl_1, 2),  # 2 combates con enemigos de nivel 1
+            (lista_enemigos_lvl_2, 2),  # 2 combates con enemigos de nivel 2
+            (lista_enemigos_lvl_3, 2)   # 2 combates con enemigos de nivel 3
+        ]
 
-        
-    #     pass
-        
+        for lista_enemigos, cantidad in niveles_combate:
+            for _ in range(cantidad):
+                enemigo = random.choice(lista_enemigos)
+                lista_enemigos.remove(enemigo)  # Eliminar al enemigo seleccionado de la lista
+                print(f"\n¡Comienza el combate contra {enemigo} !\n")
+
+                turno = 1
+                while self.personaje.get_vida() > 0 and enemigo.get_vida() > 0:
+                    print(f"\n=== Turno {turno} ===")
+                    print(f"Tu vida: {self.personaje.get_vida()} | Vida del enemigo ({enemigo.get_nombre()}): {enemigo.get_vida()}")
+
+                    accion_realizada = False
+
+                    while True:
+                        print("\n¿Qué deseas hacer?")
+                        print("1. Atacar")
+                        print("2. Defenderse")
+                        print("3. abrir inventario")
+                        print("4. Huir del combate (Salir al menu principal)\n")
+
+                        opcion = self.jug_validar_opcion("Elige una opción (1-4): ", opciones=[1, 2, 3, 4])
+
+                        if opcion == 1:  # Atacar
+                            if accion_realizada:
+                                print("Ya realizaste una acción principal este turno (Atacar o Defenderse).")
+                            else:
+                                dano = self.personaje.atacar()
+                                if not enemigo.esquivar():  # El enemigo tiene la oportunidad de esquivar
+                                    enemigo.modificar_vida_enemiga(dano)
+                                    print(f"¡Atacaste a {enemigo.get_nombre()} y causaste {dano} de daño!")
+                                else:
+                                    print(f"{enemigo.get_nombre()} esquivó tu ataque.")
+                                accion_realizada = True
+
+                        elif opcion == 2:  # Defenderse
+                            if accion_realizada:
+                                print("Ya realizaste una acción principal este turno (Atacar o Defenderse).")
+                            else:
+                                reduccion = self.personaje.defender()  # Obtener defensa del escudo equipado
+                                print(f"Te preparas para el próximo ataque. Reducirás el daño recibido en {reduccion*100} %.")
+                                self.personaje.set_defensa_activa(reduccion)  # Activar defensa
+                                accion_realizada = True
+
+                        elif opcion == 3:
+                            self.personaje.abrir_inventario()
+                            
+                        elif opcion == 4:  # Salir al menu principal
+                            print("¡Huiste del combate! El enemigo se burla de ti mientras escapas.")
+                            return
+
+                        # Salir del bucle de acción si una acción válida fue realizada
+                        if accion_realizada or opcion == 3:
+                            break
+
+                    # Turno del enemigo
+                    print(f"\n=== Turno del rival ===")
+                    if enemigo.get_vida() > 0:
+                        # Comprobamos si el jugador esquiva
+                        if not self.personaje.esquivar():  # Si no esquiva, recibe el daño
+                            dano_enemigo = enemigo.atacar()
+
+                            if self.personaje.get_defensa_activa() > 0:  # Si el jugador tiene defensa activa
+                                reduccion = self.personaje.get_defensa_activa()
+                                dano_enemigo *= (1 - reduccion)  # Reducir el daño basado en la defensa activa
+                                dano_enemigo = max(0, dano_enemigo)  # Evitar que el daño sea negativo
+                                self.personaje.set_defensa_activa(0)  # Resetear defensa activa tras reducir daño
+
+                            self.personaje.modificar_vida(dano_enemigo)
+                            print(f"{enemigo.get_nombre()} te atacó y causó {int(dano_enemigo)} de daño.")
+                        else:
+                            print(f"Que suerte!, esquivaste su ataque.")
+
+                    turno += 1
+
+                # Fin del combate
+                if self.personaje.get_vida() > 0:
+                    print(f"\n¡Has derrotado a {enemigo.get_nombre()}!")
+                    self.contador_victorias()
+                else:
+                    print("\nHas sido derrotado. ¡El combate ha terminado!")
+                    return  # Salir si el jugador muere
+                
+                ############# EN ESTA LINEA FINALIZA TODA LA BATALLA, POR LO CUAL "self.__victorias" CONTIENE TODAS LAS VICTORIAS    ############################################################################
+                
+        print("""
+              \nEl Último Eco de Eldoria
+                Tras las nueve arduas batallas en las oscuras profundidades del Umbral de las Sombras, finalmente has llegado al final de tu camino. 
+                La mazmorra, que una vez parecía interminable, ahora se encuentra en silencio, como si sus antiguos ecos se hubieran apagado con tu última victoria. 
+                El aire, que antes estaba cargado de tensión y peligro, se ha despejado. Pero el viaje no ha terminado.
+                El Cristal de Eldoria, la fuente de toda la magia y el equilibrio, yace ante ti, fragmentado, tal y como lo dejaron aquellos que lo buscaron antes. 
+                Las piezas rotas brillan débilmente, como si aún esperaran ser reunidas para restaurar la paz, o tal vez, para desatar una nueva era de caos.
+                Los reinos de Eldoria se encuentran en una encrucijada. El Rey Alaric, los elfos de los bosques eternos, 
+                los orcos de Rak’thor y los enanos de las tierras de forja han sido testigos de tu poder, tu habilidad y tu decisión. Ahora, los ojos de todos se centran en ti. 
+               ¿Restaurarás el cristal para devolver la prosperidad a tu reino? ¿O, tal vez, seguirás el camino de los orcos, buscando el poder absoluto? 
+               ¿Protegerás la magia como lo desean los elfos, o permitirás que los enanos oculten su poder, como siempre han querido?
+                En este momento, solo tú puedes decidir el destino de Eldoria. Los reinos te esperan, y sus corazones palpitantes esperan tu juicio.
+              """)
+        ############# EN ESTA LINEA FINALIZA TODA LA BATALLA, POR LO CUAL "self.__victorias" CONTIENE TODAS LAS VICTORIAS    ############################################################################
+
 
     #Se le ingresa como parametro un mensaje y una lista de opciones / menu_jugador() y elegir_raza() la utilizan
     def jug_validar_opcion(self, mensaje, opciones):
@@ -78,46 +227,10 @@ class Jugador:
             except ValueError:
                 print("Entrada inválida. Por favor, intentelo nuevamente.")
 
-    def menu_jugador(self):
-        while True:
-            print(f"""**Menu**
-                  1.-Atacar
-                  2.-Defenderse
-                  3.-Usar Pocion (Cuentas con 2 pociones)
-                  4.-Abrir inventario
-                  5.-Salir al menu principal""")
-            opcion = self.jug_validar_opcion("Eliga una opcion entre el 1 y el 5: ", opciones = [1, 2, 3, 4, 5])
-            if opcion == 1:
-                dahno_ataque = self.personaje.atacar()
-                print(dahno_ataque)
-            elif opcion == 2:
-                defensa = self.personaje.defender()
-                print(defensa)
-            elif opcion == 3:
-                print(self.personaje.get_vida())
-                self.personaje.usar_pocion()
-            elif opcion == 4:
-                self.personaje.abrir_inventario()
-
-                
-            
-                
-
-
-################################################ MENU DE COMBATE ###################################################
-
-print(f"El Umbral de las Sombras")
-print(f"""Al cruzar el oscuro umbral de la mazmorra, el aire se vuelve pesado, cargado de un aroma metálico y húmedo. 
-Una tenue luz titilante proviene de antorchas desgastadas, apenas iluminando los antiguos grabados en las paredes 
-que narran historias de conquistas olvidadas y sacrificios sombríos.
-Un eco lejano de pasos resonantes advierte que no están solos. 
-En esta oscura profundidad, los ojos de criaturas desconocidas brillan en la penumbra, observando, esperando. 
-Serán nueve los enemigos que enfrentarán, cada uno más letal y astuto que el anterior, surgidos al azar de los misterios que yacen ocultos.
-El destino es incierto, pero una cosa es segura: solo quienes enfrenten el desafío con valentía y estrategia saldrán con vida de esta prisión olvidada.
-¿Listos para desenvainar sus armas y probar su temple? La mazmorra no tiene piedad, y sus secretos no se entregan sin lucha
-      """)
-
 
 jugador = Jugador()
-jugador.crear_personaje()
-# jugador.menu_jugador()
+
+
+
+
+##################################################           CONTADOR DE VICTORIAS= self.__victorias        ############################################################################

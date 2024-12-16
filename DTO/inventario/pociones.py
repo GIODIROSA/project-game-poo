@@ -6,7 +6,7 @@ class Pocion:
     def __init__(self, nombre="Poción de Vida", tipo="Consumible", cantidad = 2):
         self.__nombre = nombre
         self.__tipo = tipo
-        self.__nivel = {1: 0.20, 2: 0.30, 3: 0.40}  # Nivel de la poción, que determina el porcentaje de curación
+        self.__nivel = {1: 0.30, 2: 0.40, 3: 0.50}  # Nivel de la poción, que determina el porcentaje de curación
         self.__cantidad = cantidad
 
     def __str__(self):

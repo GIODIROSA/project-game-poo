@@ -14,6 +14,9 @@ class Inventario:
     def get_inventario(self):
         return self.__objetos
 
+    def get_pociones(self):
+        return self.__pociones
+    
     def agregar_objeto(self, objeto):
         """Agrega un objeto al inventario."""
         self.__objetos.append(objeto)
@@ -34,24 +37,22 @@ class Inventario:
         else:
             print("Inventario:")
             for i, objeto in enumerate(self.__objetos, start=1):
-                print(f"{i}. {objeto.get_nombre()} - {objeto.get_tipo()} - Cantidad: {objeto.get_cantidad()}")
+                print(f"{i}. {objeto.get_nombre()} - {objeto.get_tipo()}")
         while True:
             print(f"""**Accion en el inventario: **
-                  1.-Cambiar de arma
-                  2.-Usar Pocion (Cuentas con {self.__pociones} pociones)
-                  3.-Salir del inventario""")
-            opcion = self.inv_validar_opcion("Eliga una opcion entre el 1 y el 3: ", opciones = [1, 2, 3])
+                  1.-Usar Pocion (Cuentas con {self.__pociones} pociones)
+                  2.-Salir del inventario""")
+            opcion = self.inv_validar_opcion("Eliga una opcion entre el 1 y el 3: ", opciones = [1, 2])
             if opcion == 1:
                 return 1
             elif opcion == 2:
-                self.__pociones.restar_pocion()
-                self.mostrar_inventario()
                 return 2
-            elif opcion == 3:
-                return 3
 
     def inv_restaurar_pocion(self):
         self.__pociones.restaurar_pociones()
+
+    def inv_restar_pocion(self):
+        self.__pociones.restar_pocion()
 
     def inv_validar_opcion(self, mensaje, opciones):
         while True:
@@ -74,3 +75,4 @@ class Inventario:
 
 
 inventario = Inventario()
+# inventario.mostrar_inventario()

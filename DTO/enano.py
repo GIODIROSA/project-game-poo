@@ -1,40 +1,26 @@
-from raza import Raza
+from .raza import Raza
 
 class Enano(Raza):
     def __init__(self, nombre):
-        super().__init__(nombre, vida_base=330, vida=330, esquive=20, raza="Orco")
+        super().__init__(nombre, vida_base=330, vida=330, esquive=20, raza="Enano")
 
     def set_nivel(self, nivel):
         if 1 <= nivel <= 3:
             super().set_nivel(nivel)
             if nivel == 2:
                 self.actualizar_vida_base(490)
-                self.__inventario.inv_restaurar_pocion()
             elif nivel == 3:
                 self.actualizar_vida_base(600)
-                self.__inventario.inv_restaurar_pocion()
-
-    
-    def usar_pocion(self):
-        # Bonificación según nivel
-        porcentaje = {1: 0.20, 2: 0.30, 3: 0.40}[self.get_nivel()]
-        vida_actual = self.get_vida()
-        vida_base = self.get_vida_base()
-        curacion = vida_base * porcentaje
-        #En el caso de que la pocion exeda el maximo de la vida, solo se recupera la vida maxima
-        if vida_actual + curacion > vida_base:
-            self.set_vida(vida_base)
-            print(f"{self.get_nombre()}, usaste una poción y recuperaste toda tu vida.")
-        else:
-            self.set_vida(vida_actual + curacion)
-            print(f"{self.get_nombre()}, usaste una poción y recuperaste {curacion} puntos de vida. Te quedan {self.get_vida()} puntos de vida.")  
 
     def atacar(self):
-        arma = self.get_arma_equipada()
-        #Habilidad del "Enano", si tiene una hacha equipado, hace 10% mas de daño
+        arma = self.get_arma_equipada()  # Usar el método de la clase base para obtener el arma equipada
         if arma.get_tipo() == "Hacha":
-            danho_ataque = (arma.get_danho() + (arma.get_danho() * 0.10))
-            return danho_ataque
+            # Habilidad del enano: si tiene una hacha equipada, hace 15% más de daño
+            danho_ataque = arma.get_danho() + (arma.get_danho() * 0.15)
         else:
-            danho_ataque = self.__arma_equipada.get_danho()
-            return danho_ataque
+            danho_ataque = arma.get_danho()
+        return danho_ataque
+        
+    def defender(self):
+        defensa = self.get_escudo_equipado().get_defensa()+0.5
+        return defensa

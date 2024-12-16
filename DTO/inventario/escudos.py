@@ -29,13 +29,4 @@ class Escudo:
     def get_n_golpes(self):
         return self.__n_golpes
 
-escudo_pequeño = Escudo("Escudo pequeño", "Escudo", 1, 30)
-# escudo_pequeño.__str__()
-# print("-"*30)
-
-escudo_mediano = Escudo("Escudo mediano", "Escudo", 2, 45)
-# escudo_mediano.__str__()
-# print("-"*30)
-
-escudo_grande = Escudo("Escudo grande", "Escudo", 3, 60)
-# escudo_grande.__str__()
+escudo = Escudo("Escudo", "Escudo", 1, 0.5)
