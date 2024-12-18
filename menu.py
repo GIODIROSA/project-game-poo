@@ -117,8 +117,11 @@ def menu_principal():
                     jugador.combate()
                 else:
                     print("No puedes combatir sin antes crear a tu personaje")
+                    
+                opcion_seleccionada = False
             elif opcion == "3":
-                pass
+                jugador.mostrar_ranking()#Asegura que mostrar_ranking() esté definida como una función global en Jugador.py, 
+                                         #Jugador, será necesario incluir self como parámetro y ajustarla en consecuencia.
             elif opcion == "4":
                 salir_juego = salir()
 

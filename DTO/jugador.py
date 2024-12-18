@@ -4,7 +4,8 @@ from .orco import Orco
 from .elfo import Elfo
 from .enano import Enano
 import random
-
+import pymysql
+from DAO.conexion import conexion
 
 
 
@@ -43,7 +44,7 @@ class Jugador:
 
     def get_victorias(self):
         return self.__victorias
-
+    
     #En esta funcion se determina el nombre del personaje y se llama a la funcion elegir raza, la cual retorna el personaje(con su raza correspondiente) creada
     def crear_personaje(self):
         print("¡Bienvenido a la creación de tu personaje!")
@@ -61,7 +62,7 @@ class Jugador:
         print(f"""Antes de elegir personajes tienes q saber lo siguiente:
         Tendras 6 enfrentamientos, cada uno mas dificil que el anterior. Cada 2 victorias subiras de nivel (nivel max: 3)
         Las pociones te curan un 30%/40%/50% de vida segun el nivel del jugador. Podras acceder a ellas desde el inventario.
-        Las pociones se restauran cada vez q subas de nivel (Ocupalas son sabiduria).
+        Las pociones se restauran cada vez q ganas una batalla.
         Los escudos te cubren un 50% del daño total. Usalo, te puede salvar la vida.
         Cada personaje tiene una probabilidad de esquivar del 20% cada vez q lo ataquen.
         Cada turno puedes realizar solo 1 accion(Atacar, defenderte o usar una de tus 2 pociones).
@@ -197,7 +198,8 @@ class Jugador:
                     print("\nHas sido derrotado. ¡El combate ha terminado!")
                     return  # Salir si el jugador muere
                 
-                ############# EN ESTA LINEA FINALIZA TODA LA BATALLA, POR LO CUAL "self.__victorias" CONTIENE TODAS LAS VICTORIAS    ############################################################################
+                
+                
                 
         print("""
               \nEl Último Eco de Eldoria
@@ -212,7 +214,46 @@ class Jugador:
                ¿Protegerás la magia como lo desean los elfos, o permitirás que los enanos oculten su poder, como siempre han querido?
                 En este momento, solo tú puedes decidir el destino de Eldoria. Los reinos te esperan, y sus corazones palpitantes esperan tu juicio.
               """)
-        ############# EN ESTA LINEA FINALIZA TODA LA BATALLA, POR LO CUAL "self.__victorias" CONTIENE TODAS LAS VICTORIAS    ############################################################################
+        self.enviar_victorias_db()
+
+    def enviar_victorias_db(self):
+             #capturar victoria imprimir 
+        try:
+            print(f"Puntaje obtenido por el jugador: {self.__victorias}")
+            with conexion.cursor() as cursor:
+                insert_query = "INSERT INTO ranking (RG_puntaje) VALUES (%s)"
+                cursor.execute(insert_query, (self.__victorias)) # Si el jugador existe, actualiza las victorias. Si no, inserta un nuevo registro.
+                conexion.commit()
+                print("Se guardo ranking correctamente en la base de datos.")#Guarda los cambios en la base de datos con commit().       
+        except pymysql.MySQLError as e:
+                print(f"Error al enviar victorias a la base de datos: {e}")#Maneja errores en la base de datos.
+
+    @staticmethod        
+    def mostrar_ranking():
+        """
+        Obtiene y muestra el ranking de jugadores desde la base de datos.
+        """
+        try:
+            with conexion.cursor() as cursor:
+                query = """
+                SELECT RG_puntaje FROM ranking ORDER BY RG_puntaje DESC 
+                """ #Consulta todos los jugadores ordenados por número de victorias en orden descendente.
+                cursor.execute(query)
+                ranking = cursor.fetchall()
+
+                if not ranking:  # Verifica si la lista está vacía
+                    print("\nNo hay jugadores en el ranking aún.")
+                    return
+                
+                print("\n=== Ranking de Jugadores ===")    
+                for i, row in enumerate(ranking, start=1):
+                    print(f"{i}. Puntaje: {row[0]}")
+
+        except pymysql.MySQLError as e:
+            print(f"Error al obtener el ranking: {e}")#Maneja errores de la base de datos.
+        
+        except Exception as ex:
+            print(f"Ocurrió un error inesperado: {ex}")
 
 
     #Se le ingresa como parametro un mensaje y una lista de opciones / menu_jugador() y elegir_raza() la utilizan
@@ -229,8 +270,3 @@ class Jugador:
 
 
 jugador = Jugador()
-
-
-
-
-##################################################           CONTADOR DE VICTORIAS= self.__victorias        ############################################################################
