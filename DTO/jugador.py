@@ -218,6 +218,7 @@ class Jugador:
 
     def enviar_victorias_db(self):
              #capturar victoria imprimir 
+        print("VERIFICAR VICTORIAS",self.__victorias)
         try:
             print(f"Puntaje obtenido por el jugador: {self.__victorias}")
             with conexion.cursor() as cursor:

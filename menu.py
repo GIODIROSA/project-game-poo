@@ -4,6 +4,7 @@ import pymysql
 from argon2 import PasswordHasher
 from DAO.conexion import conexion
 from DTO.jugador import jugador
+import re
 
 
 ph = PasswordHasher()
@@ -15,10 +16,30 @@ sesion_iniciada = False
 def registro():
     print("=== Registro ===")
     nombre_usuario = input("Ingresa tu nombre de usuario: ").lower()
+
+    if len(nombre_usuario) < 2:
+        print("El nombre de usuario debe tener al menos dos letras.")
+        return
+    
+    if not re.match("^[a-zA-Z]+$", nombre_usuario):
+        print("El nombre de usuario no debe contener números ni caracteres especiales.")
+        return
+    
+
     correo = input("Ingresa tu correo: ")
+
+    if not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", correo):
+        print("El correo ingresado no tiene un formato válido.")
+        return
+    
+
     password = input("Ingresa tu contraseña: ")
 
- 
+    if len(password) < 6:
+        print("La contraseña debe tener al menos 6 caracteres.")
+        return
+
+
     hashed_password = ph.hash(password)
 
     if not conexion or not conexion.open:
