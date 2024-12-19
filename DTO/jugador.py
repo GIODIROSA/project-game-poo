@@ -196,6 +196,7 @@ class Jugador:
                     self.contador_victorias()
                 else:
                     print("\nHas sido derrotado. ¡El combate ha terminado!")
+                    self.enviar_victorias_db()
                     return  # Salir si el jugador muere
                 
                 
